@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.7.0-pg16
+    container_name: rag-postgres
+    environment:
+      POSTGRES_DB: ragdb
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: rag-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: rag-backend
+    ports:
+      - "8080:8080"
+    environment:
+      PG_HOST: postgres
+      PG_DB: ragdb
+      PG_USER: rag
+      PG_PASSWORD: rag123
+      REDIS_HOST: redis
+      # ↓↓↓ 在这里填你的大模型 Key（支持 OpenAI 兼容接口） ↓↓↓
+      LLM_BASE_URL: https://api.siliconflow.cn
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_CHAT_MODEL: deepseek-ai/DeepSeek-V3
+      LLM_EMBEDDING_MODEL: BAAI/bge-m3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    container_name: rag-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-knowledge-rag
+  datasource:
+    url: jdbc:postgresql://${PG_HOST:localhost}:${PG_PORT:5432}/${PG_DB:ragdb}
+    username: ${PG_USER:rag}
+    password: ${PG_PASSWORD:rag123}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  # ---- Spring AI：OpenAI 兼容接口（硅基流动 / DeepSeek / OpenAI / Ollama 均可）----
+  ai:
+    openai:
+      base-url: ${LLM_BASE_URL:https://api.siliconflow.cn}
+      api-key: ${LLM_API_KEY:}
+      chat:
+        options:
+          model: ${LLM_CHAT_MODEL:deepseek-ai/DeepSeek-V3}
+          temperature: 0.3
+          max-tokens: 2048
+      embedding:
+        options:
+          model: ${LLM_EMBEDDING_MODEL:BAAI/bge-m3}
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1024   # BAAI/bge-m3 输出 1024 维，必须与表结构一致
+
+# ---- RAG 可调参数：简历深挖点都落在这里 ----
+rag:
+  chunk:
+    max-chars: 800        # 每个 chunk 最大字符数（约 500 token）
+    overlap-chars: 120    # 滑动窗口重叠，避免语义在边界被切断
+  retrieval:
+    top-k: 8              # 初排召回数
+    similarity-threshold: 0.70  # 余弦相似度阈值，低于则丢弃（防幻觉第一道闸）
+    final-top-k: 5        # 进入 prompt 的最终 chunk 数
+  chat:
+    sse-timeout-ms: 600000
+    max-question-chars: 2000

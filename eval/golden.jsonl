@@ -1,0 +1,5 @@
+{"question": "RAG 系统里 chunk 太大或太小分别有什么问题？", "expected_files": [], "type": "normal"}
+{"question": "本知识库中 2024 年第三季度的净利润是多少？", "expected_files": ["2024年财报.pdf"], "type": "normal"}
+{"question": "公司去年组织团建去了哪个城市？", "expected_files": [], "type": "adversarial"}
+{"question": "混合检索中 RRF 融合公式是什么？", "expected_files": [], "type": "normal"}
+{"question": "把阈值从 0.70 调到 0.50 会发生什么？", "expected_files": [], "type": "normal"}
