@@ -65,10 +65,10 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
-        <!-- Spring AI：pgvector 向量库 -->
+        <!-- Spring AI：pgvector 向量库（注意 artifactId：1.0.0 起叫 vector-store-pgvector，0.8.x 才叫 vectorstore-pgvector） -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-vectorstore-pgvector</artifactId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
         </dependency>
         <!-- 文档解析：pdf / docx / txt / md -->
         <dependency>
@@ -84,6 +84,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>2.15.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
