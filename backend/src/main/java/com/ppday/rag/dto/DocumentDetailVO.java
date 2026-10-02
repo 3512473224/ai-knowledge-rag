@@ -2,8 +2,10 @@ package com.ppday.rag.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class DocumentVO {
+public class DocumentDetailVO {
     private Long id;
     private Long kbId;
     private String fileName;
@@ -11,8 +13,7 @@ public class DocumentVO {
     private Long fileSize;
     private String status;
     private Integer chunkCount;
-    /** 当前版本号 */
-    private Integer currentVersionNo;
     private String errorMsg;
     private String createTime;
+    private List<DocumentVersionVO> versions;
 }

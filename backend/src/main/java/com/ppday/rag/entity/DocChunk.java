@@ -18,6 +18,9 @@ public class DocChunk {
 
     private Long documentId;
 
+    /** 所属版本：关键词检索按版本过滤，只查 isCurrent=true 的版本 */
+    private Long versionId;
+
     private Integer chunkIndex;
 
     @Column(columnDefinition = "TEXT")

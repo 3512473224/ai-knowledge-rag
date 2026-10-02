@@ -45,6 +45,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    volumes:
+      # 上传原文件落盘目录（data/docs），供 pdf 在线预览用；挂载出来避免容器重建丢失
+      - docdata:/app/data
 
   frontend:
     build: ./frontend
@@ -56,3 +59,4 @@ services:
 
 volumes:
   pgdata:
+  docdata:

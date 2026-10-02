@@ -16,11 +16,12 @@ http.interceptors.response.use(
 /**
  * SSE 流式问答。原生 EventSource 不支持 POST body，
  * 这里用 fetch + ReadableStream 手工解析 data: 行。
- * onEvent(name, data)：name = token | sources | done
+ * onEvent(name, data)：name = token | sources | messageId | done
  */
-export async function streamChat(sessionId, question, onEvent, signal) {
+export async function streamChat(sessionId, kbId, question, onEvent, signal) {
   const params = new URLSearchParams()
   if (sessionId) params.append('sessionId', sessionId)
+  if (kbId) params.append('kbId', kbId)
   params.append('question', question)
   const resp = await fetch(`/api/chat/stream?${params.toString()}`, {
     method: 'POST',
@@ -51,17 +52,49 @@ export async function streamChat(sessionId, question, onEvent, signal) {
 }
 
 export const api = {
-  uploadDocument: (file) => {
+  // ---- 知识库 ----
+  listKb: () => http.get('/api/kb'),
+  createKb: (data) => http.post('/api/kb', data),
+  updateKb: (id, data) => http.put(`/api/kb/${id}`, data),
+  deleteKb: (id) => http.delete(`/api/kb/${id}`),
+
+  // ---- 文档 ----
+  uploadDocument: (file, kbId) => {
     const fd = new FormData()
     fd.append('file', file)
+    fd.append('kbId', kbId)
     return http.post('/api/documents/upload', fd)
   },
-  listDocuments: () => http.get('/api/documents'),
+  listDocuments: (kbId) => http.get('/api/documents', { params: kbId ? { kbId } : {} }),
+  documentDetail: (id) => http.get(`/api/documents/${id}`),
   documentProgress: (id) => http.get(`/api/documents/${id}/progress`),
+  activateVersion: (docId, versionId) =>
+    http.post(`/api/documents/${docId}/versions/${versionId}/activate`),
+  documentFileUrl: (id) => `/api/documents/${id}/file`,
+  documentText: (id) => http.get(`/api/documents/${id}/text`, { responseType: 'text' }),
   deleteDocument: (id) => http.delete(`/api/documents/${id}`),
-  listSessions: () => http.get('/api/chat/sessions'),
+
+  // ---- 问答 ----
+  listSessions: (kbId, keyword) =>
+    http.get('/api/chat/sessions', { params: { kbId: kbId || '', keyword: keyword || '' } }),
   listMessages: (id) => http.get(`/api/chat/sessions/${id}/messages`),
-  deleteSession: (id) => http.delete(`/api/chat/sessions/${id}`)
+  deleteSession: (id) => http.delete(`/api/chat/sessions/${id}`),
+
+  // ---- 反馈 ----
+  submitFeedback: (messageId, useful, note) =>
+    http.post(`/api/feedback/messages/${messageId}`, { useful, note }),
+  listFeedback: (status) => http.get('/api/feedback', { params: { status } }),
+  resolveFeedback: (id, status) => http.post(`/api/feedback/${id}/resolve`, { status }),
+
+  // ---- 看板 ----
+  dashboardStats: (kbId) => http.get('/api/dashboard/stats', { params: kbId ? { kbId } : {} })
+}
+
+export function formatSize(b) {
+  if (!b && b !== 0) return '-'
+  if (b < 1024) return b + ' B'
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'
+  return (b / 1048576).toFixed(1) + ' MB'
 }
 
 export default http

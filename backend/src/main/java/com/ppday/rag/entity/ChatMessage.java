@@ -27,6 +27,9 @@ public class ChatMessage {
     @Column(columnDefinition = "TEXT")
     private String sources;
 
+    /** 是否为拒答（检索无命中时的固定回复），数据看板统计无答案率用 */
+    private Boolean refused = false;
+
     @CreationTimestamp
     private LocalDateTime createTime;
 }

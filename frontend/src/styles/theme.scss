@@ -1,0 +1,229 @@
+// ============================================================
+// 知库问答 · 设计主题
+// 主色：深 slate 灰 #334155（稳重、知识感）
+// 点缀：emerald 绿 #10b981（增长、智能）
+// 这里用 CSS 变量全量覆盖 Element Plus 默认蓝色，
+// 组件库只负责交互骨架，视觉语言由这套变量定义。
+// ============================================================
+
+:root {
+  // ---- Element Plus 主色系（emerald）----
+  --el-color-primary: #10b981;
+  --el-color-primary-light-3: #34d399;
+  --el-color-primary-light-5: #6ee7b7;
+  --el-color-primary-light-7: #a7f3d0;
+  --el-color-primary-light-8: #d1fae5;
+  --el-color-primary-light-9: #ecfdf5;
+  --el-color-primary-dark-2: #059669;
+
+  // ---- 语义色 ----
+  --el-color-success: #10b981;
+  --el-color-success-light-3: #34d399;
+  --el-color-success-light-5: #6ee7b7;
+  --el-color-success-light-7: #a7f3d0;
+  --el-color-success-light-8: #d1fae5;
+  --el-color-success-light-9: #ecfdf5;
+  --el-color-success-dark-2: #059669;
+  --el-color-warning: #f59e0b;
+  --el-color-danger: #ef4444;
+  --el-color-info: #64748b;
+
+  // ---- 品牌中性色（slate）----
+  --brand-950: #020617;
+  --brand-900: #0f172a;
+  --brand-800: #1e293b;
+  --brand-700: #334155;
+  --brand-600: #475569;
+  --brand-500: #64748b;
+  --brand-400: #94a3b8;
+  --brand-300: #cbd5e1;
+  --brand-200: #e2e8f0;
+  --brand-100: #f1f5f9;
+  --brand-50: #f8fafc;
+
+  // ---- Element Plus 细节 ----
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-font-family: "PingFang SC", "Microsoft YaHei", "Inter", system-ui, sans-serif;
+  --el-text-color-primary: var(--brand-800);
+  --el-text-color-regular: var(--brand-600);
+  --el-text-color-secondary: var(--brand-500);
+  --el-text-color-placeholder: var(--brand-400);
+  --el-border-color: var(--brand-200);
+  --el-border-color-light: var(--brand-100);
+  --el-bg-color-page: var(--brand-50);
+}
+
+// ---- 全局基础 ----
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  font-family: var(--el-font-family);
+  background: var(--brand-50);
+  color: var(--brand-800);
+}
+
+// ---- 通用页面骨架 ----
+.page {
+  padding: 28px 32px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand-900);
+    letter-spacing: 0.5px;
+  }
+
+  p.desc {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--brand-500);
+  }
+}
+
+// ---- 数据卡片 ----
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--brand-100);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.05);
+
+  .label {
+    font-size: 12px;
+    color: var(--brand-500);
+    margin-bottom: 8px;
+  }
+
+  .value {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--brand-900);
+    font-variant-numeric: tabular-nums;
+
+    &.emerald {
+      color: var(--el-color-primary-dark-2);
+    }
+    &.amber {
+      color: #d97706;
+    }
+    &.rose {
+      color: #e11d48;
+    }
+  }
+
+  .sub {
+    font-size: 12px;
+    color: var(--brand-400);
+    margin-top: 4px;
+  }
+}
+
+// ---- 条形图（纯 CSS，不引入图表库） ----
+.bar-chart {
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .bar-label {
+    width: 220px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--brand-600);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--brand-100);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #34d399, #10b981);
+    border-radius: 6px;
+    transition: width 0.6s ease;
+  }
+  .bar-value {
+    width: 44px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-700);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ---- 空态 ----
+.empty-hero {
+  text-align: center;
+  padding: 72px 24px;
+  color: var(--brand-500);
+
+  .big-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: var(--brand-800);
+  }
+
+  p {
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+}
+
+// ---- 卡片网格（知识库列表用） ----
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.kb-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.1);
+  }
+}
+
+// ---- 移动端 ----
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+  .bar-chart .bar-label {
+    width: 130px;
+  }
+}

@@ -18,18 +18,22 @@ public class ChatController {
     private final ChatService chatService;
 
     /**
-     * 流式问答（SSE）。sessionId 为空时自动创建新会话。
-     * 事件：token（文本增量）/ sources（引用来源 JSON）/ done（会话 id）
+     * 流式问答（SSE）。sessionId 为空时自动创建新会话（此时 kbId 必填）。
+     * 事件：token（文本增量）/ sources（引用来源 JSON）/
+     * messageId（AI 回答落库 id，挂反馈按钮用）/ done（会话 id）。
      */
     @PostMapping("/stream")
     public SseEmitter stream(@RequestParam(required = false) Long sessionId,
+                             @RequestParam(required = false) Long kbId,
                              @RequestParam String question) {
-        return chatService.streamChat(sessionId, question);
+        return chatService.streamChat(sessionId, kbId, question);
     }
 
+    /** 历史会话：按知识库过滤 + 标题关键词搜索 */
     @GetMapping("/sessions")
-    public Result<List<ChatSession>> sessions() {
-        return Result.ok(chatService.listSessions());
+    public Result<List<ChatSession>> sessions(@RequestParam(required = false) Long kbId,
+                                              @RequestParam(required = false) String keyword) {
+        return Result.ok(chatService.listSessions(kbId, keyword));
     }
 
     @GetMapping("/sessions/{id}/messages")

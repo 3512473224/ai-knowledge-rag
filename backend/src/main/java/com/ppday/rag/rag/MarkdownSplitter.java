@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
-* 两级切分策略（面试深挖点）：
+* 两级切分策略：
 * 1. 先按 Markdown 标题（# / ## / ###）做语义粗切，保证同一主题不被拆散；
 * 2. 粗块超过 maxChars 时再按段落做滑动窗口细切，overlap 保留上下文，
 * 避免答案恰好落在切分边界上导致检索丢失。

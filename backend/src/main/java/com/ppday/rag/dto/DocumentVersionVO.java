@@ -3,16 +3,15 @@ package com.ppday.rag.dto;
 import lombok.Data;
 
 @Data
-public class DocumentVO {
+public class DocumentVersionVO {
     private Long id;
-    private Long kbId;
+    private Integer versionNo;
     private String fileName;
     private String fileType;
     private Long fileSize;
-    private String status;
     private Integer chunkCount;
-    /** 当前版本号 */
-    private Integer currentVersionNo;
+    private String status;
     private String errorMsg;
+    private Boolean isCurrent;
     private String createTime;
 }

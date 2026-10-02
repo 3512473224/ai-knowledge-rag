@@ -25,10 +25,12 @@
 ## 2. 运行评估
 
 ```bash
-# 确保后端已启动（http://localhost:8080），且文档已入库
+# 确保后端已启动（http://localhost:8080），且文档已入库到对应知识库
 cd eval
-python3 eval.py --base http://localhost:8080 --golden golden.jsonl
+python3 eval.py --base http://localhost:8080 --golden golden.jsonl --kb-id 1
 ```
+
+> 评估结果会同时写入 `eval/last_result.json`，数据看板页自动展示。
 
 输出示例：
 
@@ -39,7 +41,7 @@ python3 eval.py --base http://localhost:8080 --golden golden.jsonl
 平均首字延迟：1.4s
 ```
 
-## 3. 指标定义（面试话术）
+## 3. 指标定义
 
 - **Recall@5**：标准答案所在文档出现在引用来源里的比例。调优切分/阈值/融合权重就看它涨没涨。
 - **拒答正确率**：对抗题里系统说"无法回答"的比例。阈值设太低会幻觉、设太高会误拒答，两者要一起看。

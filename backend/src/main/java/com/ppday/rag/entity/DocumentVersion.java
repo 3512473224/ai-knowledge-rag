@@ -6,19 +6,24 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * 文档版本：同一文档重复上传不再建新文档行，而是追加版本。
+ * 检索永远只查 isCurrent=true 的版本，回滚=切换 isCurrent，开销极小。
+ */
 @Data
 @Entity
-@Table(name = "kb_document")
-public class Document {
+@Table(name = "kb_document_version",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"documentId", "versionNo"}))
+public class DocumentVersion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** 所属知识库 */
-    private Long kbId;
+    private Long documentId;
 
-    /** 原始文件名 */
+    private Integer versionNo;
+
     private String fileName;
 
     /** pdf / docx / txt / md */
@@ -26,17 +31,19 @@ public class Document {
 
     private Long fileSize;
 
-    /** 当前版本的 sha256，用于秒传去重（同一知识库+同名文件比对） */
     @Column(length = 64)
     private String sha256;
 
-    /** PENDING / PROCESSING / DONE / FAILED（取当前版本状态） */
-    private String status;
-
     private Integer chunkCount = 0;
+
+    /** PENDING / PROCESSING / DONE / FAILED */
+    private String status;
 
     @Column(columnDefinition = "TEXT")
     private String errorMsg;
+
+    /** 是否当前生效版本 */
+    private Boolean isCurrent = false;
 
     @CreationTimestamp
     private LocalDateTime createTime;

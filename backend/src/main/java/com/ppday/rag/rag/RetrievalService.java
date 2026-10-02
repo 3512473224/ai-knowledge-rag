@@ -2,11 +2,13 @@ package com.ppday.rag.rag;
 
 import com.ppday.rag.config.RagProperties;
 import com.ppday.rag.repository.DocChunkRepository;
+import com.ppday.rag.service.VectorScopeService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 混合检索 Hybrid Search（面试深挖点 No.1）：
+ * 混合检索 Hybrid Search：
  *
  *   向量检索（语义）              关键词检索（精确）
  *   topK=8, 阈值 0.70 过滤   +   pg_trgm 三字符相似度 topK
@@ -39,21 +41,30 @@ public class RetrievalService {
     private final VectorStore vectorStore;
     private final DocChunkRepository docChunkRepository;
     private final RagProperties properties;
+    private final VectorScopeService scopeService;
 
-    public List<Hit> retrieve(String question) {
+    /**
+     * 混合检索：向量（语义）+ 关键词（字面精确），RRF 融合。
+     *
+     * @param kbId 检索限定在该知识库内；向量侧用 metadata.scope 精确过滤，
+     *             关键词侧用 SQL JOIN 版本表过滤 is_current。
+     */
+    public List<Hit> retrieve(String question, Long kbId) {
         RagProperties.Retrieval cfg = properties.getRetrieval();
 
-        // ---- 第一路：向量检索（语义）----
+        // ---- 第一路：向量检索（语义），scope 一次过滤"知识库+当前版本" ----
         SearchRequest request = SearchRequest.builder()
                 .query(question)
                 .topK(cfg.getTopK())
                 .similarityThreshold(cfg.getSimilarityThreshold())
+                .filterExpression(new FilterExpressionBuilder()
+                        .eq("scope", scopeService.scopeOf(kbId, true)).build())
                 .build();
         List<Document> vecDocs = vectorStore.similaritySearch(request);
 
         // ---- 第二路：关键词检索（字面精确）----
         List<DocChunkRepository.ChunkSimRow> kwRows =
-                docChunkRepository.keywordSearch(question, cfg.getTopK());
+                docChunkRepository.keywordSearch(question, kbId, cfg.getTopK());
 
         // ---- RRF 融合 ----
         Map<String, FusedHit> fused = new LinkedHashMap<>();

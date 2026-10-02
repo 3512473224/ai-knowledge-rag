@@ -17,6 +17,9 @@ public class ChatSession {
 
     private String title;
 
+    /** 会话创建时选定的知识库，检索范围锁定该库 */
+    private Long kbId;
+
     @CreationTimestamp
     private LocalDateTime createTime;
 
